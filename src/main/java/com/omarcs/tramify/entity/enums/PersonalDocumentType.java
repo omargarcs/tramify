@@ -1,6 +1,6 @@
 package com.omarcs.tramify.entity.enums;
 
-public enum DocumentType {
+public enum PersonalDocumentType {
     PASSPORT,
     INE,
     VISA,

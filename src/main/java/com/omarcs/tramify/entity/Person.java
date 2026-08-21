@@ -21,12 +21,12 @@ public class Person {
     @Column(unique = true, nullable = false)
     private String curp;
 
-    @Column(unique = true, nullable = true)
+    @Column(unique = true)
     private String rfc;
 
     private LocalDate dateOfBirth;
 
-    @OneToMany(mappedBy = "person")
+    @OneToMany(mappedBy = "person", cascade = CascadeType.REMOVE)
     private List<PersonalDocument> personalDocuments;
 
     @OneToMany(mappedBy = "person")

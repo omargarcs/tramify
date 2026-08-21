@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -32,5 +34,9 @@ public class Vehicle {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "person_id")
     private Person person;
+
+    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.REMOVE)
+    private List<VehicleDocument> vehicleDocuments;
+
 
 }

@@ -9,8 +9,8 @@ import com.omarcs.tramify.repository.VehicleDocumentRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 public class ExpiringDocumentService {
@@ -26,19 +26,19 @@ public class ExpiringDocumentService {
     }
 
     public List<ExpiringDocumentDto> getExpiringDocuments (LocalDate start, LocalDate end){
+
         List<PersonalDocument> personalDocuments = personalDocumentRepository.findExpiringWithPerson(start, end);
         List<VehicleDocument> vehicleDocuments = vehicleDocumentRepository.findExpiringWithVehicleAndPerson(start, end);
-        List<ExpiringDocumentDto> expiringDocuments = new ArrayList<>();
 
-        for(PersonalDocument pd : personalDocuments){
-            expiringDocuments.add(new ExpiringDocumentDto(pd.getPerson().getName(), pd.getPersonalDocumentType().name(),
-                    pd.getExpiryDate(), DocumentOrigin.PERSONAL));
-        }
+        //USING STREAMS
+        Stream<ExpiringDocumentDto> expiringPersonalDocuments = personalDocuments.stream()
+                .map(pd -> new ExpiringDocumentDto(pd.getPerson().getName(),
+                        pd.getPersonalDocumentType().name(), pd.getExpiryDate(), DocumentOrigin.PERSONAL));
 
-        for(VehicleDocument vd : vehicleDocuments){
-            expiringDocuments.add(new ExpiringDocumentDto(vd.getVehicle().getPerson().getName(),
-                    vd.getVehicleDocumentType().name(), vd.getExpiryDate(), DocumentOrigin.VEHICULAR));
-        }
-        return expiringDocuments;
+        Stream<ExpiringDocumentDto> expiringVehicleDocuments = vehicleDocuments.stream()
+                .map(vd -> new ExpiringDocumentDto(vd.getVehicle().getPerson().getName(),
+                        vd.getVehicleDocumentType().name(), vd.getExpiryDate(), DocumentOrigin.VEHICULAR));
+
+        return Stream.concat(expiringPersonalDocuments, expiringVehicleDocuments).toList();
     }
 }
